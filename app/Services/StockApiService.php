@@ -24,11 +24,20 @@ readonly class StockApiService
                 ->get('https://www.alphavantage.co/query', [
                     'function' => 'TIME_SERIES_INTRADAY',
                     'symbol' => $symbol,
-                    'interval' => '5min',
+                    'interval' => '1min',
+                    'outputsize' => 'full',
                     'apikey' => $this->config->get('services.alpha_vantage.api_key'),
                 ]);
 
-            return $response->json();
+            $data = $response->json();
+
+            if (! isset($data['Time Series (1min)'])) {
+                $this->log->error('Invalid response data from the API.');
+
+                return null;
+            }
+
+            return $data;
         } catch (Exception $e) {
             $this->log->error($e->getMessage());
 
