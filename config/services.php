@@ -31,4 +31,8 @@ return [
         ],
     ],
 
+    'alpha_vantage' => [
+        'api_key' => env('ALPHA_VANTAGE_API_KEY'),
+    ],
+
 ];
