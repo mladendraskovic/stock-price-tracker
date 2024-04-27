@@ -39,6 +39,8 @@ class StockSeeder extends Seeder
             ],
         ];
 
-        Stock::query()->insert($stocks);
+        foreach ($stocks as $stock) {
+            Stock::query()->create($stock);
+        }
     }
 }
