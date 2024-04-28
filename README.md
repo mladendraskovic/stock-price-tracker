@@ -8,7 +8,7 @@
 
 ## Installation
 
-Easiest way to run the application is to use Docker and Laravel Sail. Make sure that you have Docker installed on your machine and that ports for MySQL and Redis are not in use (stop the locally installed services before continuing).
+Easiest way to run the application is to use Docker and [Laravel Sail](https://laravel.com/docs/11.x/sail). Make sure that you have Docker installed on your machine and that ports for MySQL and Redis are not in use (stop the locally installed services before continuing).
 
 Next, clone the repository and run the following command to install the dependencies:
 
@@ -59,3 +59,11 @@ Alternatively, you can run the scheduler to fetch the data every minute:
 ```
 
 Finally, you can use the Postman collection to interact with the API. You can find the exported collection in the `postman_collection.json` file in the root directory of the project.
+
+## Testing
+
+To run the tests, you can use the following command (a composer script that will prepare the test database and run the tests):
+
+```bash
+./vendor/bin/sail composer test
+```

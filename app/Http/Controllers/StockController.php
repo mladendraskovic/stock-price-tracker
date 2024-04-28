@@ -43,7 +43,9 @@ class StockController extends Controller
             'end_date_time' => 'required|date_format:Y-m-d H:i:s',
         ]);
 
-        return $this->response->json($this->stockService->getStocksPriceChangeReport($params));
+        return $this->response->json([
+            'data' => $this->stockService->getStocksPriceChangeReport($params),
+        ]);
     }
 
     public function show(string $symbol): JsonResource

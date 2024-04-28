@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Stock;
 use App\Models\StockPrice;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -22,5 +23,12 @@ class StockPriceFactory extends Factory
             'price' => $this->faker->randomFloat(2, 1, 100),
             'date_time' => $this->faker->dateTime(),
         ];
+    }
+
+    public function forStock(Stock $stock): self
+    {
+        return $this->state(fn (array $attributes) => [
+            'stock_id' => $stock->id,
+        ]);
     }
 }
