@@ -2,16 +2,21 @@
 
 namespace App\Console\Commands;
 
+use App\Contracts\StockApi;
+use App\DTOs\StockPriceDTO;
 use App\Models\Stock;
 use App\Models\StockPrice;
-use App\Services\StockApiService;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Connection;
+use Illuminate\Support\Collection;
+use Throwable;
 
 class FetchStockPriceData extends Command
 {
-    public function __construct(private StockApiService $stockApiService)
-    {
+    public function __construct(
+        private readonly StockApi $stockApi,
+        private readonly Connection $db,
+    ) {
         parent::__construct();
     }
 
@@ -31,6 +36,8 @@ class FetchStockPriceData extends Command
 
     /**
      * Execute the console command.
+     *
+     * @throws Throwable
      */
     public function handle(): int
     {
@@ -38,7 +45,7 @@ class FetchStockPriceData extends Command
 
         Stock::all(['id', 'symbol'])
             ->each(function (Stock $stock) {
-                $stockPriceData = $this->stockApiService->getStockPriceData($stock->symbol);
+                $stockPriceData = $this->stockApi->getStockPriceData($stock->symbol);
 
                 if ($stockPriceData === null) {
                     $this->error("Failed to fetch stock price data for symbol: $stock->symbol");
@@ -46,27 +53,36 @@ class FetchStockPriceData extends Command
                     return;
                 }
 
-                DB::transaction(function () use ($stockPriceData, $stock) {
-                    collect($stockPriceData['Time Series (1min)'])
-                        ->chunk(1000)
-                        ->map(function ($chunk) use ($stock) {
-                            return StockPrice::query()->upsert(
-                                $chunk->map(function ($data, $dateTime) use ($stock) {
-                                    return [
-                                        'stock_id' => $stock->id,
-                                        'price' => floatval($data['4. close']),
-                                        'date_time' => $dateTime,
-                                    ];
-                                })->values()->all(),
-                                ['stock_id', 'date_time'],
-                                ['price']
-                            );
-                        });
-                });
+                $this->db->transaction(fn () => $this->persistStockPriceData($stockPriceData, $stock));
 
-                $this->info("Stock price data fetched successfully for symbol: $stock->symbol");
+                $this->info("Stock price data saved successfully for symbol: $stock->symbol");
             });
 
         return self::SUCCESS;
+    }
+
+    /**
+     * @param  array<StockPriceDTO>  $stockPriceData
+     */
+    private function persistStockPriceData(array $stockPriceData, Stock $stock): void
+    {
+        collect($stockPriceData)
+            ->chunk(1000)
+            ->each(function (Collection $chunk) use ($stock) {
+                $data = $chunk
+                    ->map(fn (StockPriceDTO $stockPriceDTO) => [
+                        'stock_id' => $stock->id,
+                        'price' => $stockPriceDTO->price,
+                        'date_time' => $stockPriceDTO->dateTime,
+                    ])
+                    ->values()
+                    ->all();
+
+                StockPrice::query()->upsert(
+                    $data,
+                    ['stock_id', 'date_time'],
+                    ['price']
+                );
+            });
     }
 }
