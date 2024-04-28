@@ -34,7 +34,10 @@ readonly class AlphaVantageApi implements StockApi
             $data = $response->json();
 
             if (! isset($data['Time Series (1min)'])) {
-                $this->log->error('Invalid response data from the API.');
+                $this->log->error('Invalid response data from the API.', [
+                    'symbol' => $symbol,
+                    'response' => $data,
+                ]);
 
                 return null;
             }

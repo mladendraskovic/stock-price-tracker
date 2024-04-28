@@ -75,7 +75,6 @@ class FetchStockPriceData extends Command
                         'price' => $stockPriceDTO->price,
                         'date_time' => $stockPriceDTO->dateTime,
                     ])
-                    ->values()
                     ->all();
 
                 StockPrice::query()->upsert(
