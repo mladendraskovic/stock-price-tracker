@@ -38,8 +38,6 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.3'
-          extensions: mbstring, xml, ctype, iconv, intl, pdo_mysql
-          coverage: none
 
       - name: Start MySQL
         run: sudo service mysql start
@@ -47,7 +45,7 @@ jobs:
       - name: Prepare test database and run the tests
         run: composer test
         env:
-          DB_HOST: 127.0.0.1
+          DB_HOST: mysql
           DB_PORT: ${{ job.services.mysql.ports['3306'] }}
           DB_DATABASE: testing
           DB_USERNAME: root
