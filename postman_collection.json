@@ -191,7 +191,7 @@
 	"variable": [
 		{
 			"key": "base_url",
-			"value": "http://localhost",
+			"value": "https://stock-price-tracker.mladendraskovic.com",
 			"type": "string"
 		}
 	]

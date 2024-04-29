@@ -39,8 +39,8 @@ class StockControllerTest extends TestCase
                             'price',
                             'date_time',
                         ],
-                    ]
-                ]
+                    ],
+                ],
             ])
             ->assertJsonFragment([
                 'id' => $testStock->id,
@@ -69,7 +69,7 @@ class StockControllerTest extends TestCase
             'symbols' => [$testStock->symbol],
         ]);
 
-        $this->getJson('/api/stocks/multiple?' . $queryParams)
+        $this->getJson('/api/stocks/multiple?'.$queryParams)
             ->assertStatus(200)
             ->assertJsonCount(1, 'data')
             ->assertJsonStructure([
@@ -82,8 +82,8 @@ class StockControllerTest extends TestCase
                             'price',
                             'date_time',
                         ],
-                    ]
-                ]
+                    ],
+                ],
             ])
             ->assertJsonFragment([
                 'id' => $testStock->id,
@@ -108,7 +108,7 @@ class StockControllerTest extends TestCase
         $testStock = $stocks->first();
         $latestStockPrice = $testStock->latestPrice;
 
-        $this->getJson('/api/stocks/' . $testStock->symbol)
+        $this->getJson('/api/stocks/'.$testStock->symbol)
             ->assertStatus(200)
             ->assertJsonStructure([
                 'data' => [
@@ -119,7 +119,7 @@ class StockControllerTest extends TestCase
                         'price',
                         'date_time',
                     ],
-                ]
+                ],
             ])
             ->assertJsonFragment([
                 'id' => $testStock->id,
@@ -160,7 +160,7 @@ class StockControllerTest extends TestCase
             'end_date_time' => '2024-01-03 23:59:59',
         ]);
 
-        $this->getJson('/api/stocks/price-change-report?' . $queryParams)
+        $this->getJson('/api/stocks/price-change-report?'.$queryParams)
             ->assertStatus(200)
             ->assertJsonCount(1, 'data')
             ->assertJsonStructure([
@@ -172,8 +172,8 @@ class StockControllerTest extends TestCase
                         'start_price',
                         'end_price',
                         'price_change',
-                    ]
-                ]
+                    ],
+                ],
             ])
             ->assertJsonFragment([
                 'id' => $testStock->id,
